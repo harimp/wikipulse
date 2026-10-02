@@ -44,7 +44,7 @@ jobs:
             npx cdk diff 'Prod/*' --method template 2>&1
             echo '```'
           } > diff.md
-      - uses: marocchino/sticky-pull-request-comment@v2
+      - uses: marocchino/sticky-pull-request-comment@v3
         with:
           header: cdk-diff
           path: infra/diff.md
