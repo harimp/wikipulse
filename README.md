@@ -14,7 +14,8 @@ services/ingest/       Python Lambdas, stdlib + boto3 only (no bundling step)
   src/ingest/discover    latest snapshot -> the year's 12 monthly files
   src/ingest/download    stream one file into an S3 multipart upload, skip if already there
 .github/workflows/
-  ci.yml                 lint, test, synth; on PRs also posts `cdk diff` as a comment
+  ci.yml                 lint, test, synth (PRs, and called by deploy.yml)
+  diff.yml               on PRs: posts `cdk diff` against production as a comment
   deploy.yml             on push to main: CI, then `cdk deploy 'Prod/*'`
 ```
 

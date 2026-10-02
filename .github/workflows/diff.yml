@@ -1,0 +1,50 @@
+name: Diff
+
+# Separate from ci.yml so that workflow, which deploy.yml calls, needs only read access:
+# a called workflow may not request more permissions than its caller grants.
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  diff:
+    name: cdk diff against production
+    # Pull requests from this repo only (forks get no AWS credentials), and only
+    # once the Foundation stack is deployed and the role ARN saved as a variable.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      vars.AWS_DIFF_ROLE_ARN != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+      pull-requests: write
+    defaults:
+      run:
+        working-directory: infra
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: infra/package-lock.json
+      - run: npm ci
+      - uses: aws-actions/configure-aws-credentials@v5
+        with:
+          role-to-assume: ${{ vars.AWS_DIFF_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+      # Template diff needs only the read-only CDK lookup role.
+      - run: |
+          {
+            echo '### `cdk diff` against production'
+            echo '```diff'
+            npx cdk diff 'Prod/*' --method template 2>&1
+            echo '```'
+          } > diff.md
+      - uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: cdk-diff
+          path: infra/diff.md
