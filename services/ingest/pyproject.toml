@@ -1,0 +1,21 @@
+[project]
+name = "wikipulse-ingest"
+version = "0.1.0"
+description = "Lambdas that copy MediaWiki history dumps into S3"
+requires-python = ">=3.14"
+# Runtime needs only the standard library and boto3, which the Lambda runtime provides.
+dependencies = []
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "ruff>=0.9"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM"]

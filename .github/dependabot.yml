@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /infra
+    schedule: { interval: monthly }
+    groups:
+      cdk: { patterns: ["aws-cdk*", "constructs"] }
+  - package-ecosystem: pip
+    directory: /services/ingest
+    schedule: { interval: monthly }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }

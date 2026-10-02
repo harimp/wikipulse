@@ -1,0 +1,17 @@
+{
+  "app": "npx tsx bin/wikipulse.ts",
+  "watch": {
+    "include": [
+      "bin/**",
+      "lib/**",
+      "../services/**/src/**"
+    ]
+  },
+  "context": {
+    "githubRepo": "OWNER/wikipulse",
+    "region": "us-east-1",
+    "monthlyBudgetUsd": 5,
+    "@aws-cdk/core:checkSecretUsage": true,
+    "@aws-cdk/aws-iam:minimizePolicies": true
+  }
+}
