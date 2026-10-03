@@ -46,11 +46,11 @@ test('deploy role trusts only the production environment', () => {
     AssumeRolePolicyDocument: Match.objectLike({
       Statement: [
         Match.objectLike({
-          Condition: {
-            StringEquals: Match.objectLike({
-              'token.actions.githubusercontent.com:sub': 'repo:octo/wikipulse:environment:production',
-            }),
-          },
+          Condition: Match.objectLike({
+            StringLike: {
+              'token.actions.githubusercontent.com:sub': 'repo:octo@*/wikipulse@*:environment:production',
+            },
+          }),
         }),
       ],
     }),

@@ -28,11 +28,15 @@ export class FoundationStack extends Stack {
           clientIds: ['sts.amazonaws.com'],
         });
 
+    // GitHub's `sub` carries immutable IDs: repo:owner@<id>/name@<id>:<context>.
+    // Matching the IDs by wildcard trusts the names, which are unique while the
+    // account exists (users and orgs share one namespace).
+    const [owner, name] = props.githubRepo.split('/');
     const githubPrincipal = (subject: string) =>
       new iam.OpenIdConnectPrincipal(provider, {
-        StringEquals: {
-          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
-          'token.actions.githubusercontent.com:sub': `repo:${props.githubRepo}:${subject}`,
+        StringEquals: { 'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com' },
+        StringLike: {
+          'token.actions.githubusercontent.com:sub': `repo:${owner}@*/${name}@*:${subject}`,
         },
       });
 
