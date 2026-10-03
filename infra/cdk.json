@@ -8,7 +8,7 @@
     ]
   },
   "context": {
-    "githubRepo": "OWNER/wikipulse",
+    "githubRepo": "harimp/wikipulse",
     "region": "us-east-1",
     "monthlyBudgetUsd": 5,
     "@aws-cdk/core:checkSecretUsage": true,
