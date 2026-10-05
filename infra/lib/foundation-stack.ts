@@ -6,6 +6,12 @@ import { Construct } from 'constructs';
 export interface FoundationStackProps extends StackProps {
   /** `owner/name` of the GitHub repository allowed to deploy. */
   githubRepo: string;
+  /**
+   * Immutable numeric IDs of the repo's owner and of the repo itself, as GitHub
+   * puts them in the OIDC `sub` claim. Names can be recycled; IDs never are.
+   * From `curl https://api.github.com/repos/<owner>/<name>`: `owner.id`, `id`.
+   */
+  githubIds: { owner: number; repo: number };
   monthlyBudgetUsd: number;
   /** Where budget alerts go. No email, no notifications. */
   budgetEmail?: string;
@@ -28,15 +34,15 @@ export class FoundationStack extends Stack {
           clientIds: ['sts.amazonaws.com'],
         });
 
-    // GitHub's `sub` carries immutable IDs: repo:owner@<id>/name@<id>:<context>.
-    // Matching the IDs by wildcard trusts the names, which are unique while the
-    // account exists (users and orgs share one namespace).
+    // GitHub's immutable subject format: repo:<owner>@<owner id>/<name>@<repo id>:<context>.
+    // Pinning the IDs means a recreated account or repo with the same name gets nothing.
     const [owner, name] = props.githubRepo.split('/');
-    const githubPrincipal = (subject: string) =>
+    const repoSubject = `repo:${owner}@${props.githubIds.owner}/${name}@${props.githubIds.repo}`;
+    const githubPrincipal = (context: string) =>
       new iam.OpenIdConnectPrincipal(provider, {
-        StringEquals: { 'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com' },
-        StringLike: {
-          'token.actions.githubusercontent.com:sub': `repo:${owner}@*/${name}@*:${subject}`,
+        StringEquals: {
+          'token.actions.githubusercontent.com:aud': 'sts.amazonaws.com',
+          'token.actions.githubusercontent.com:sub': `${repoSubject}:${context}`,
         },
       });
 

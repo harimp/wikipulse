@@ -9,6 +9,10 @@
   },
   "context": {
     "githubRepo": "harimp/wikipulse",
+    "githubIds": {
+      "owner": 1609135,
+      "repo": 1402447275
+    },
     "region": "us-east-1",
     "monthlyBudgetUsd": 5,
     "@aws-cdk/core:checkSecretUsage": true,

@@ -31,7 +31,12 @@ GitHub Actions never holds AWS keys. It gets short-lived credentials through OID
 You need AWS credentials for the account locally, plus Node 24 and Python 3.14.
 
 ```bash
-# 1. Set your repo in infra/cdk.json ("githubRepo": "owner/wikipulse"), then:
+# 1. Set your repo in infra/cdk.json:
+#      "githubRepo": "owner/wikipulse",
+#      "githubIds": { "owner": <owner.id>, "repo": <id> }
+#    IDs from `curl https://api.github.com/repos/owner/wikipulse`. GitHub's OIDC
+#    tokens carry them, and pinning them stops a recycled name inheriting the roles.
+#    Then:
 cd infra && npm ci
 npx cdk bootstrap
 npx cdk deploy Wikipulse-Foundation -c budgetEmail=you@example.com

@@ -37,6 +37,7 @@ test('deploy role trusts only the production environment', () => {
   const stack = new FoundationStack(new App(), 'Foundation', {
     env,
     githubRepo: 'octo/wikipulse',
+    githubIds: { owner: 1, repo: 2 },
     monthlyBudgetUsd: 5,
   });
   const template = Template.fromStack(stack);
@@ -46,11 +47,11 @@ test('deploy role trusts only the production environment', () => {
     AssumeRolePolicyDocument: Match.objectLike({
       Statement: [
         Match.objectLike({
-          Condition: Match.objectLike({
-            StringLike: {
-              'token.actions.githubusercontent.com:sub': 'repo:octo@*/wikipulse@*:environment:production',
-            },
-          }),
+          Condition: {
+            StringEquals: Match.objectLike({
+              'token.actions.githubusercontent.com:sub': 'repo:octo@1/wikipulse@2:environment:production',
+            }),
+          },
         }),
       ],
     }),

@@ -13,6 +13,7 @@ const env = {
 new FoundationStack(app, 'Wikipulse-Foundation', {
   env,
   githubRepo: app.node.getContext('githubRepo') as string,
+  githubIds: app.node.getContext('githubIds') as { owner: number; repo: number },
   monthlyBudgetUsd: Number(app.node.getContext('monthlyBudgetUsd')),
   budgetEmail: app.node.tryGetContext('budgetEmail') as string | undefined,
 });
